@@ -29,7 +29,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
 
 
 @router.post("/auth/verify-email")
-def verify_email(payload: schemas.VerifyEmailRequest, db: Session = Depends(database.get_db)):
+def verify_email(
+    payload: schemas.VerifyEmailRequest, db: Session = Depends(database.get_db)
+):
     try:
         decoded_payload = jwt.decode(
             payload.token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM]

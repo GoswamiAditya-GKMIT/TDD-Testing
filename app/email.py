@@ -42,7 +42,7 @@ def send_verification_email(email: str, token: str):  # pragma: no cover
         server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
         if SMTP_TLS:
             server.starttls()
-        
+
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.send_message(message)
         server.quit()

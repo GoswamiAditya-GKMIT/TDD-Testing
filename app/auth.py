@@ -11,7 +11,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 REFRESH_TOKEN_EXPIRE_MINUTES = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", 1440))
-EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES = int(os.getenv("EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES", 30))
+EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES = int(
+    os.getenv("EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES", 30)
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,7 +38,9 @@ def create_token(
         elif token_type == "refresh":
             expire = datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
         else:
-            expire = datetime.utcnow() + timedelta(minutes=EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES)
+            expire = datetime.utcnow() + timedelta(
+                minutes=EMAIL_VERIFY_TOKEN_EXPIRE_MINUTES
+            )
     to_encode.update({"exp": expire, "type": token_type})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

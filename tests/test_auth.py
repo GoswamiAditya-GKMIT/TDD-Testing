@@ -82,27 +82,34 @@ def test_create_token_with_delta():
 def test_verify_email_success(client, user_data, mocker):
     # Setup: Register user
     client.post("/auth/register", json=user_data)
-    
+
     # Generate a verification token manually for testing
-    verify_token = create_token(data={"sub": user_data["email"]}, token_type="verification")
-    
+    verify_token = create_token(
+        data={"sub": user_data["email"]}, token_type="verification"
+    )
+
     # Action: Verify email
     response = client.post("/auth/verify-email", json={"token": verify_token})
-    
+
     # Assert
     assert response.status_code == 200
     assert response.json()["message"] == "Email verified successfully"
-    
+
     # Check DB status - list users should now show is_verified=True
-    login_resp = client.post("/auth/login", json={"email": user_data["email"], "password": user_data["password"]})
+    login_resp = client.post(
+        "/auth/login",
+        json={"email": user_data["email"], "password": user_data["password"]},
+    )
     token = login_resp.json()["access_token"]
     users_resp = client.get("/users/", headers={"Authorization": f"Bearer {token}"})
     assert users_resp.json()[0]["is_verified"] is True
+
 
 def test_verify_email_invalid_token(client):
     response = client.post("/auth/verify-email", json={"token": "invalid-token"})
     assert response.status_code == 400
     assert "Invalid or expired" in response.json()["detail"]
+
 
 def test_verify_email_wrong_token_type(client, user_data):
     # Use an access token instead of a verification token
@@ -114,7 +121,9 @@ def test_verify_email_wrong_token_type(client, user_data):
 def test_verify_email_user_not_found(client, user_data):
     # Token for a user not in DB
     non_existent_user_email = "ghost@example.com"
-    token = create_token(data={"sub": non_existent_user_email}, token_type="verification")
+    token = create_token(
+        data={"sub": non_existent_user_email}, token_type="verification"
+    )
     response = client.post("/auth/verify-email", json={"token": token})
     assert response.status_code == 400
     assert response.json()["detail"] == "User not found"
